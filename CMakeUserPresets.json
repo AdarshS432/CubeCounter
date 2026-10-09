@@ -2,10 +2,11 @@
     "version": 8,
     "configurePresets": [
         {
-            "name" : "vcpkg-main2",
-            "inherits" : "vcpkg-main",
+            "name" : "linux-gcc-vcpkg",
+            "inherits" : "linux-gcc",
+            "binaryDir" : "${sourceDir}/build/linux-gcc",
             "cacheVariables": {
-                "CMAKE_TOOLCHAIN_FILE" : "C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+                "CMAKE_TOOLCHAIN_FILE" : "$env{HOME}/Applications/vcpkg/scripts/buildsystems/vcpkg.cmake"
             }
         }
     ]

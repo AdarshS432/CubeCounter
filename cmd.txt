@@ -1,0 +1,1 @@
+sudo cmake --preset linux-gcc -DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja

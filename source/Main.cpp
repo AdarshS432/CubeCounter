@@ -4,8 +4,6 @@
 #include <SDL3/SDL_opengl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <gmpxx.h>
-
 #include <iostream>
 #include <cstdio>
 
@@ -85,7 +83,15 @@ int main(int argc, char* argv[]) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
-    SDL_Window* window = SDL_CreateWindow("CubeCounter v1.0", 1152, 648, SDL_WINDOW_OPENGL);
+    SDL_Window* window = nullptr;
+    try {
+        window = SDL_CreateWindow("CubeCounter v1.0", 1152, 648, SDL_WINDOW_OPENGL);
+        cout<<SDL_GetError()<<endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error creating SDL window: " << SDL_GetError() << std::endl;
+        return -1;
+    }
     SDL_GLContext context = SDL_GL_CreateContext(window);
     SDL_GL_MakeCurrent(window, context);
 
@@ -95,12 +101,12 @@ int main(int argc, char* argv[]) {
     SDL_SetWindowRelativeMouseMode(window, true);
 
     if(window == nullptr) {
-        cout << "Failed to create window: " << SDL_GetError() << endl;
+        std::cerr << "Failed to create window: " << SDL_GetError() << std::endl;
         return -1;
     }
 
     if(!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
-        cout << "Failed to initialize GLAD" << endl;
+        std::cerr << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
     glEnable(GL_DEPTH_TEST);

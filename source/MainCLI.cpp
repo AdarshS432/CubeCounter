@@ -6,7 +6,7 @@
 int LAYERS;
 bool PRINTFULLNUMBER;
 
-static mpz_class number;
+static cpp_int number;
 static std::string numcombos;
 static std::string numcombos_scientific;
 static std::string numdigits;
@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
     number = calculation.Calculate(LAYERS);
 
     std::cout<<"Converting to String [2/5]"<<std::endl;
-    if(calculation.returnNumDigits(LAYERS) < 50 || PRINTFULLNUMBER) numcombos = number.get_str();
+    if(calculation.returnNumDigits(LAYERS) < 50 || PRINTFULLNUMBER) numcombos = number.str();
     else std::cout<<"[Info] Skipping Conversion. Use '--printfullnumber 1' or '--printfullnumber true' to print the entire number"<<std::endl;
 
     std::cout<<"Calculating Scientific Notation and Formatting [3/5]"<<std::endl;

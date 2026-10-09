@@ -10,17 +10,7 @@
     "features": {
         "gui": {
             "description": "Build the GUI version of the application",
-            "dependencies": [
-                "sdl3",
-                "glm",
-                {
-                    "name": "imgui",
-                    "features" : [
-                        "sdl3-binding",
-                        "opengl3-binding"
-                    ]
-                }
-            ]
+            "dependencies": []
         }
     }
 }
