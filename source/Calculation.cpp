@@ -1,4 +1,5 @@
 #include <Calculation.h>
+#include <format>
 #include <algorithm>
 #include <cmath>
 #include <string>
@@ -7,7 +8,7 @@ cpp_int Factorial24;
 cpp_int Factorial12;
 cpp_int Fact7X3to6;
 
-constexpr uint PRECISION_MAX = 2147483647;
+constexpr uint PRECISION_MAX = 64;
 
 static cpp_int factorial(unsigned int n) {
     cpp_int result = 1;
@@ -56,29 +57,42 @@ cpp_int Calculation::Calculate(int i) {
 std::string Calculation::returnString10(const cpp_int& i) {
     return i.str();
 }
-std::string Calculation::returnScientific(const cpp_int& i, int precision) {
+std::string Calculation::returnScientific(const cpp_int& i, int size, int precision) {
     if(i == 1) return "1E0";
+
+    using namespace boost::multiprecision;
+    using cpp_float = number<backends::cpp_bin_float<PRECISION_MAX>>;
+
+    if(precision > PRECISION_MAX) {
+        std::cerr<<"[ERROR] Precision Inputted Exceeds Maximum Value of: "<<PRECISION_MAX<<std::endl;
+    }
     /*mpf_class f(i, (precision+10) * 4);
     mp_exp_t exp;
 
     std::string str = f.str(exp, 10, precision+1);*/
-    std::string i_str = i.str();
-    auto i_float = i.convert_to<boost::multiprecision::cpp_dec_float<PRECISION_MAX>>();
-    std::ostringstream oss;
-    oss<<std::scientific<<std::setprecision(precision)<<i;
-    std::string str = oss.str();
+    int digits = returnNumDigits(size);
+    int exp = digits - 1;
+    auto leading_calc = i.convert_to<cpp_float>() / boost::multiprecision::pow(cpp_float(10), exp);
 
-    /*bool negative = (str[0] == '-');
-    if(negative) str = str.substr(1);
+    cpp_float leading(leading_calc);
+    std::string leading_trimmed = leading.str(precision, std::ios_base::fixed);
+
+    std::ostringstream oss;
+    oss<<leading_trimmed<<"E"<<exp;
+    return oss.str();
+
+    /*bool negative = (i_str[0] == '-');
+    if(negative) i_str = i_str.substr(1);
     std::string result = (negative ? "-" : "");
-    result += str[0];
+    result += i_str[0];
     result += '.';
-    if(str.length() > 1) {
-        result += str.substr(1, precision);
+    if(i_str.length() > 1) {
+        result += i_str.substr(1, precision);
     } 
+    double exp = boost::multiprecision::log10(i);
     result += "E" + std::to_string(exp-1);
-    return result;*/
-    return str;
+    return result;
+    return i_str;*/
 }
 int Calculation::returnNumDigits(int i) {
     if(i == 1) return 1;

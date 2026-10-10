@@ -24,6 +24,9 @@ static std::string numcombos_scientific;
 static std::string numdigits;
 static std::string numtrailzeros;
 
+
+constexpr int PRECISION = 4;
+
 UI::UI(SDL_Window* window, SDL_GLContext &context, const char* version, Array &main_array, Calculation &calc) {
     cube_array = &main_array;
     calculation = &calc;
@@ -48,7 +51,7 @@ UI::UI(SDL_Window* window, SDL_GLContext &context, const char* version, Array &m
 
     number = calculation->Calculate(layercount);
     numcombos = number.str();
-    numcombos_scientific = calculation->returnScientific(number, 4);
+    numcombos_scientific = calculation->returnScientific(number, layercount, PRECISION);
     numdigits = std::to_string(calculation->returnNumDigits(layercount));
     numtrailzeros = std::to_string(calculation->returnTrailingZeros(layercount));
 }
@@ -90,7 +93,7 @@ void UI::render() {
         (*cube_array).SetVars(layercount, cubescrambled);
         number = calculation->Calculate(layercount);
         numcombos = number.str();
-        numcombos_scientific = calculation->returnScientific(number, 4);
+        numcombos_scientific = calculation->returnScientific(number, layercount, PRECISION);
         numdigits = std::to_string(calculation->returnNumDigits(layercount));
         numtrailzeros = std::to_string(calculation->returnTrailingZeros(layercount));
     }
