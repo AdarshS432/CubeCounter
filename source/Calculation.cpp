@@ -32,6 +32,7 @@ Calculation::Calculation() {
     Fact7X3to6 = factorial(7) * 729;
 }
 cpp_int Calculation::Calculate(int i) {
+    if(i == 0) return 0;
     if(i == 1) return 1;
     cpp_int Base = 24 * (1<<10) * Factorial12;
     
@@ -58,6 +59,7 @@ std::string Calculation::returnString10(const cpp_int& i) {
     return i.str();
 }
 std::string Calculation::returnScientific(const cpp_int& i, int size, int precision) {
+    if(i == 0) return "0E0";
     if(i == 1) return "1E0";
 
     using namespace boost::multiprecision;
@@ -72,14 +74,24 @@ std::string Calculation::returnScientific(const cpp_int& i, int size, int precis
     std::string str = f.str(exp, 10, precision+1);*/
     int digits = returnNumDigits(size);
     int exp = digits - 1;
-    auto leading_calc = i.convert_to<cpp_float>() / boost::multiprecision::pow(cpp_float(10), exp);
+    std::cout<<"Calculated Digits and Exp"<<std::endl;
 
-    cpp_float leading(leading_calc);
-    std::string leading_trimmed = leading.str(precision, std::ios_base::fixed);
+    auto backend = i.backend();
+    size_t limb_count = backend.size();
+    //constexpr size_t limb_bits = sizeof(limb_bits) * 8;
+    unsigned long long first64 = backend.limbs()[limb_count - 1];
+    size_t shift_amount = (limb_count - 1) * bits_per_limb;
 
-    std::ostringstream oss;
-    oss<<leading_trimmed<<"E"<<exp;
-    return oss.str();
+    cpp_float mantissa;
+    if(limb_count > 1) {
+        unsigned long long next64 = backend.limbs()[limb_count - 2];
+        mantissa = cpp_float(first64) + ldexp(cpp_float(next64), -static_cast<int>(bits_per_limb));
+    } else {
+        mantissa = cpp_float(first64);
+    }
+    cpp_float leading = ldexp(mantissa, static_cast<int>(shift_amount)) / exp;
+
+    return leading.str();
 
     /*bool negative = (i_str[0] == '-');
     if(negative) i_str = i_str.substr(1);
@@ -95,6 +107,7 @@ std::string Calculation::returnScientific(const cpp_int& i, int size, int precis
     return i_str;*/
 }
 int Calculation::returnNumDigits(int i) {
+    if(i == 0) return 0;
     if(i == 1) return 1;
     double a = 6.56515806476;
     double b = 13.0708481624;
@@ -104,6 +117,6 @@ int Calculation::returnNumDigits(int i) {
     return floor(a + (i%2)*b + std::floor((i-2)/2)*c + std::floor(pow((i-2)/2.0,2))*d) + 1;
 }
 int Calculation::returnTrailingZeros(int i) {
-    if(i == 1) return 0;
+    if(i <= 1) return 0;
     return std::pow(i-((i%2) + 1), 2) + 2*(i%2);
 }

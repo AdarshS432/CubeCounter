@@ -10,11 +10,6 @@ project(CubeCounter VERSION 0.1.0 LANGUAGES C CXX)
 
 include(FetchContent) # TEMPORARY FOR FETCHCONTENT TESTING
 
-# Existing GMP setup — kept intact while Boost is being tested.
-find_library(GMP_LIBRARY NAMES gmp libgmp REQUIRED)
-find_library(GMPXX_LIBRARY NAMES gmpxx libgmpxx REQUIRED)
-find_path(GMP_INCLUDE NAMES gmpxx.h REQUIRED)
-
 # >>> TEMPORARY BOOST.MP TEST DEPENDENCY: remove this block if not adopting Boost.
 FetchContent_Declare(boost_multiprecision
     GIT_REPOSITORY https://github.com/boostorg/multiprecision.git
@@ -28,8 +23,7 @@ if(BUILD_GUI)
     set(SDL_TESTS OFF CACHE BOOL "" FORCE)
     set(SDL_EXAMPLES OFF CACHE BOOL "" FORCE)
     set(SDL_INSTALL OFF CACHE BOOL "" FORCE)
-    # SDL's optional X11 extensions require extra -devel packages. Keep the
-    # core X11 backend (usable on KDE Wayland through Xwayland), but skip them.
+    # Extra X-11 Extensions
     set(SDL_X11_XCURSOR OFF CACHE BOOL "" FORCE)
     set(SDL_X11_XDBE OFF CACHE BOOL "" FORCE)
     set(SDL_X11_XINPUT OFF CACHE BOOL "" FORCE)
@@ -41,7 +35,6 @@ if(BUILD_GUI)
     set(SDL_X11_XTEST OFF CACHE BOOL "" FORCE)
     set(GLM_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 
-    # >>> FETCHCONTENT DEPENDENCIES: temporary replacement for installed SDL3/GLM/ImGui packages.
     FetchContent_Declare(SDL3
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
         GIT_TAG release-3.4.18
@@ -78,7 +71,8 @@ if(BUILD_GUI)
         "${imgui_SOURCE_DIR}/backends"
     )
     target_link_libraries(imgui PUBLIC SDL3::SDL3)
-    # <<< FETCHCONTENT DEPENDENCIES
+
+
 
     find_package(OpenGL REQUIRED)
 
@@ -107,8 +101,7 @@ if(BUILD_GUI)
         SDL3::SDL3
         glm::glm 
         glad 
-        ${GMP_LIBRARY} 
-        # TEMPORARY BOOST TEST LINK — GMP remains linked above and unchanged.
+
         Boost::multiprecision
         OpenGL::GL
         imgui::imgui
@@ -123,8 +116,6 @@ target_include_directories(cubecounter-cli PRIVATE include)
 target_compile_definitions(cubecounter-cli PRIVATE __GMP_WITHIN_GMP)
 target_include_directories(cubecounter-cli PRIVATE ${GMP_INCLUDE})
 target_link_libraries(cubecounter-cli PRIVATE 
-    ${GMPXX_LIBRARY}
-    ${GMP_LIBRARY}
-    # TEMPORARY BOOST TEST LINK — GMP remains linked above and unchanged.
+
     Boost::multiprecision
 )

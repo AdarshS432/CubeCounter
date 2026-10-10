@@ -2,18 +2,17 @@
     "version": 8,
     "configurePresets": [
         {
-            "name": "vcpkg-main",
+            "name": "main",
             "displayName": "Custom configure preset",
             "description": "Sets Ninja generator, build and install directory",
             "binaryDir": "${sourceDir}/build/${presetName}",
             "cacheVariables": {
-                "CMAKE_INSTALL_PREFIX": "${sourceDir}",
-                "CMAKE_TOOLCHAIN_FILE" : "$env{HOME}/Applications/vcpkg/scripts/buildsystems/vcpkg.cmake"
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}"
             }
         },
         {
             "name" : "windows-mingw",
-            "inherits" : "vcpkg-main",
+            "inherits" : "main",
             "displayName": "Windows Mingw",
             "generator" : "Ninja",
             "cacheVariables": {
@@ -24,7 +23,7 @@
 
         {
             "name" : "windows-msvc",
-            "inherits" : "vcpkg-main",
+            "inherits" : "main",
             "displayName": "Windows MSVC for Visual Studio 2022",
             "generator" : "Visual Studio 17 2022",
             "cacheVariables": {
@@ -34,7 +33,7 @@
         },
         {
             "name" : "linux-gcc",
-            "inherits" : "vcpkg-main",
+            "inherits" : "main",
             "displayName": "Linux GCC",
             "generator" : "Ninja",
             "cacheVariables": {
@@ -46,7 +45,7 @@
         },
         {
             "name" : "macos-clang",
-            "inherits" : "vcpkg-main",
+            "inherits" : "main",
             "displayName": "MacOS Clang",
             "generator" : "Ninja",
             "cacheVariables": {
@@ -61,7 +60,7 @@
 
         {
             "name" : "windows-mingw-cli",
-            "inherits" : "vcpkg-main",
+            "inherits" : "main",
             "displayName": "Windows Mingw CLI-Only",
             "generator" : "Ninja",
             "cacheVariables": {
@@ -75,7 +74,7 @@
 
         {
             "name" : "windows-msvc-cli",
-            "inherits" : "vcpkg-main",
+            "inherits" : "main",
             "displayName": "Windows MSVC for Visual Studio 2022 CLI-Only",
             "generator" : "Visual Studio 17 2022",
             "cacheVariables": {
@@ -88,7 +87,7 @@
         },
         {
             "name" : "linux-gcc-cli",
-            "inherits" : "vcpkg-main",
+            "inherits" : "main",
             "displayName": "Linux GCC CLI-Only",
             "generator" : "Ninja",
             "cacheVariables": {
@@ -103,7 +102,7 @@
         },
         {
             "name" : "macos-clang-cli",
-            "inherits" : "vcpkg-main",
+            "inherits" : "main",
             "displayName": "MacOS Clang CLI-Only",
             "generator" : "Ninja",
             "cacheVariables": {
