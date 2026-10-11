@@ -1,12 +1,16 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <Calculation.h>
 
 int LAYERS = 3;
 int PRECISION = 4;
 bool PRINTFULLNUMBER = false;
+bool WRITE_TO_FILE = false;
+const char* FILE_PATH;
 
-static cpp_int number;
+//static cpp_int number;
+static mpz_class number;
 static std::string numcombos;
 static std::string numcombos_scientific;
 static std::string numdigits;
@@ -38,6 +42,14 @@ int main(int argc, char* argv[]) {
             }
             PRECISION = std::stoi(argv[i+1]);
         }
+        if(arg == "--file") {
+            if(i == argc-1) {
+                std::cerr<<"[ERROR] No File Path Provided"<<std::endl;
+                return -1;
+            }
+            WRITE_TO_FILE = true;
+            FILE_PATH = argv[i+1];
+        }
     }
 
     Calculation calculation = Calculation();
@@ -46,11 +58,11 @@ int main(int argc, char* argv[]) {
     number = calculation.Calculate(LAYERS);
 
     std::cout<<"Converting to String [2/5]"<<std::endl;
-    if(calculation.returnNumDigits(LAYERS) < 50 || PRINTFULLNUMBER) numcombos = number.str();
+    if(calculation.returnNumDigits(LAYERS) < 50 || PRINTFULLNUMBER) numcombos = number.get_str();
     else std::cout<<"[Info] Skipping Conversion. Use '--printfullnumber 1' or '--printfullnumber true' to print the entire number"<<std::endl;
 
     std::cout<<"Calculating Scientific Notation and Formatting [3/5]"<<std::endl;
-    numcombos_scientific = calculation.returnScientific(number, LAYERS, PRECISION);
+    numcombos_scientific = calculation.returnScientific(number, PRECISION);
 
     std::cout<<"Calculating Number of Digits [4/5]"<<std::endl;
     numdigits = std::to_string(calculation.returnNumDigits(LAYERS));
@@ -59,6 +71,29 @@ int main(int argc, char* argv[]) {
     numtrailzeros = std::to_string(calculation.returnTrailingZeros(LAYERS));
     std::cout<<"-----------------------------------------"<<std::endl;
 
+    if(WRITE_TO_FILE) {
+        std::cout<<"Writing to File [1/1]"<<std::endl;
+        std::ofstream file(FILE_PATH);
+        if(file.is_open()) {
+            file<<"Size of Cube: "<<LAYERS<<std::endl;
+            file<<"Number of Combinations: "<<std::endl;
+            file<<number<<std::endl;
+            file<<"Number of Combinations (Scientific): "<<std::endl;
+            numcombos_scientific[strcspn(numcombos_scientific.c_str(), "\n")] = '\0';
+            file<<numcombos_scientific<<std::endl;
+
+            file<<"Number of Digits: "<<std::endl;
+            file<<numdigits.c_str()<<std::endl;
+
+            file<<"Number of Trailing Zeros: "<<std::endl;
+            file<<numtrailzeros.c_str()<<std::endl;
+            file.close();
+            std::cout<<"Successfully Wrote to File: "<<FILE_PATH<<std::endl;
+            std::cout<<"-----------------------------------------"<<std::endl;
+        } else {
+            std::cerr<<"[ERROR] Count Not Open File"<<std::endl;
+        }
+    }
 
 
     std::cout<<"Calculation Finished Successfully"<<std::endl;

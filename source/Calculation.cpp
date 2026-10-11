@@ -4,9 +4,10 @@
 #include <cmath>
 #include <string>
 
-cpp_int Factorial24;
+/*cpp_int Factorial24;
 cpp_int Factorial12;
-cpp_int Fact7X3to6;
+cpp_int Fact7X3to6;*/
+mpz_class Factorial24, Factorial12, Fact7X3to6;
 
 constexpr uint PRECISION_MAX = 64;
 
@@ -27,12 +28,39 @@ static cpp_int integerPower(cpp_int base, unsigned long exponent) {
     }
     return result;
 }
-
+Calculation::Calculation() {
+    Factorial24 = factorial(24_mpz);
+    Factorial12 = factorial(12_mpz);
+    Fact7X3to6 = factorial(7_mpz) * (int)pow(3, 6); 
+}
+/*
 Calculation::Calculation() {
     Factorial24 = factorial(24);
     Factorial12 = factorial(12);
     Fact7X3to6 = factorial(7) * 729;
 }
+*/
+mpz_class Calculation::Calculate(int i) {
+    if(i == 1) return 1_mpz;
+    mpz_class Base = 24_mpz * (1<<10) * Factorial12;
+    
+    mpz_class OddComponent;
+    mpz_pow_ui(OddComponent.get_mpz_t(), Base.get_mpz_t(), i%2);
+
+    mpz_class FlooredComponent;
+    mpz_pow_ui(FlooredComponent.get_mpz_t(), Factorial24.get_mpz_t(), floor((i-2)/2));
+
+    mpz_class FinalComponent;
+    mpz_class FinalBase;
+    mpz_class Fact4to6;
+    mpz_pow_ui(Fact4to6.get_mpz_t(), ((mpz_class)factorial(4_mpz)).get_mpz_t(), 6);
+    FinalBase = Factorial24 / Fact4to6;
+    mpz_pow_ui(FinalComponent.get_mpz_t(), FinalBase.get_mpz_t(), floor(pow((i-2)/2.0, 2)));
+
+    mpz_class FinalNumber = Fact7X3to6 * OddComponent * FlooredComponent * FinalComponent;
+    return FinalNumber;
+}
+/*
 cpp_int Calculation::Calculate(int i) {
     if(i == 0) return 0;
     if(i == 1) return 1;
@@ -56,6 +84,9 @@ cpp_int Calculation::Calculate(int i) {
     cpp_int FinalNumber = Fact7X3to6 * OddComponent * FlooredComponent * FinalComponent;
     return FinalNumber;
 }
+*/
+
+
 
 std::string Calculation::returnString10(const cpp_int& i) {
     return i.str();
@@ -70,13 +101,9 @@ std::string Calculation::returnScientific(const cpp_int& i, int size, int precis
     if(precision > PRECISION_MAX) {
         std::cerr<<"[ERROR] Precision Inputted Exceeds Maximum Value of: "<<PRECISION_MAX<<std::endl;
     }
-    /*mpf_class f(i, (precision+10) * 4);
-    mp_exp_t exp;
 
-    std::string str = f.str(exp, 10, precision+1);*/
     int digits = returnNumDigits(size);
     int exp = digits - 1;
-    //std::cout<<"Calculated Digits and Exp"<<std::endl;
     size_t msb_value = msb(i);
 
     constexpr double conversion = 3.32192809489;
@@ -94,33 +121,31 @@ std::string Calculation::returnScientific(const cpp_int& i, int size, int precis
     std::ostringstream oss;
     oss<<scaled<<std::endl;
     return oss.str();
-    //constexpr size_t limb_bits = sizeof(limb_bits) * 8;
+}
 
-    /*cpp_int power = pow(cpp_int(10), exp - precision);
-    cpp_int quotient = i / (power - 1); //Integer Division, power - 1 for rounding
-    cpp_int mod = quotient % 10;
+std::string Calculation::returnString10(mpz_class i) {
+    return i.get_str(10);
+}
+std::string Calculation::returnScientific(mpz_class i, int precision) {
+    if(i == 1_mpz) return "1E0";
+    mpf_class f(i, (precision+10) * 4);
+    mp_exp_t exp;
 
-    cpp_int add = 0;
-    if(mod >= 5) {
-        add = 10 - mod;
-    }
-    quotient += add;
-    std::string quotient_str = quotient.str();
-    return std::string(quotient_str[0] + "."s + quotient_str.substr(1) + "e+"s + std::to_string(exp));*/
+    std::string str = f.get_str(exp, 10, precision+1);
 
-    /*bool negative = (i_str[0] == '-');
-    if(negative) i_str = i_str.substr(1);
+    bool negative = (str[0] == '-');
+    if(negative) str = str.substr(1);
     std::string result = (negative ? "-" : "");
-    result += i_str[0];
+    result += str[0];
     result += '.';
-    if(i_str.length() > 1) {
-        result += i_str.substr(1, precision);
+    if(str.length() > 1) {
+        result += str.substr(1, precision);
     } 
-    double exp = boost::multiprecision::log10(i);
     result += "E" + std::to_string(exp-1);
     return result;
-    return i_str;*/
 }
+
+
 int Calculation::returnNumDigits(int i) {
     if(i == 0) return 0;
     if(i == 1) return 1;

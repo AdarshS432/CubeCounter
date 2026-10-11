@@ -10,6 +10,10 @@ project(CubeCounter VERSION 0.1.0 LANGUAGES C CXX)
 
 include(FetchContent) # TEMPORARY FOR FETCHCONTENT TESTING
 
+find_library(GMP_LIBRARY NAMES gmp libgmp REQUIRED)
+find_library(GMPXX_LIBRARY NAMES gmpxx libgmpxx REQUIRED)
+find_path(GMP_INCLUDE NAMES gmpxx.h REQUIRED)
+
 # >>> TEMPORARY BOOST.MP TEST DEPENDENCY: remove this block if not adopting Boost.
 FetchContent_Declare(boost_multiprecision
     GIT_REPOSITORY https://github.com/boostorg/multiprecision.git
@@ -75,6 +79,7 @@ if(BUILD_GUI)
 
 
     find_package(OpenGL REQUIRED)
+    #find_package(gmp REQUIRED)
 
     add_library(glad STATIC "source/glad/glad.c")
     target_include_directories(glad PUBLIC include)
@@ -101,7 +106,7 @@ if(BUILD_GUI)
         SDL3::SDL3
         glm::glm 
         glad 
-
+        ${GMP_LIBRARY}
         Boost::multiprecision
         OpenGL::GL
         imgui::imgui
@@ -118,4 +123,8 @@ target_include_directories(cubecounter-cli PRIVATE ${GMP_INCLUDE})
 target_link_libraries(cubecounter-cli PRIVATE 
 
     Boost::multiprecision
+)
+target_link_libraries(cubecounter-cli PRIVATE 
+    ${GMPXX_LIBRARY}
+    ${GMP_LIBRARY}
 )

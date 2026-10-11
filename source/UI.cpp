@@ -1,7 +1,7 @@
 #include <UI.h>
 #include <Array.h>
 #include <Calculation.h>
-//#include <gmpxx.h>
+#include <gmpxx.h>
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
@@ -18,7 +18,8 @@ bool scrambledisabled;
 Array* cube_array;
 Calculation* calculation;
 
-static cpp_int number;
+//static cpp_int number;
+static mpz_class number;
 static std::string numcombos;
 static std::string numcombos_scientific;
 static std::string numdigits;
@@ -50,8 +51,11 @@ UI::UI(SDL_Window* window, SDL_GLContext &context, const char* version, Array &m
 
 
     number = calculation->Calculate(layercount);
-    numcombos = number.str();
-    numcombos_scientific = calculation->returnScientific(number, layercount, PRECISION);
+    //numcombos = number.str();
+    //numcombos_scientific = calculation->returnScientific(number, layercount, PRECISION);
+    numcombos = number.get_str();
+    numcombos_scientific = calculation->returnScientific(number, PRECISION);
+
     numdigits = std::to_string(calculation->returnNumDigits(layercount));
     numtrailzeros = std::to_string(calculation->returnTrailingZeros(layercount));
 }
@@ -92,8 +96,8 @@ void UI::render() {
     if(ImGui::InputInt("##LayerCount", &layercount)) {
         (*cube_array).SetVars(layercount, cubescrambled);
         number = calculation->Calculate(layercount);
-        numcombos = number.str();
-        numcombos_scientific = calculation->returnScientific(number, layercount, PRECISION);
+        numcombos = number.get_str();
+        numcombos_scientific = calculation->returnScientific(number, PRECISION);
         numdigits = std::to_string(calculation->returnNumDigits(layercount));
         numtrailzeros = std::to_string(calculation->returnTrailingZeros(layercount));
     }
