@@ -2,9 +2,9 @@
 #include <string>
 #include <Calculation.h>
 
-int LAYERS;
-int PRECISION;
-bool PRINTFULLNUMBER;
+int LAYERS = 3;
+int PRECISION = 4;
+bool PRINTFULLNUMBER = false;
 
 static cpp_int number;
 static std::string numcombos;
@@ -71,7 +71,8 @@ int main(int argc, char* argv[]) {
         std::cout<<"[Info] Number too large to display fully."<<std::endl;
     }
     std::cout<<"Number of Combinations (Scientific): "<<std::endl;
-    std::cout<<numcombos_scientific.c_str()<<std::endl;
+    numcombos_scientific[strcspn(numcombos_scientific.c_str(), "\n")] = '\0';
+    std::cout<<numcombos_scientific<<std::endl;
 
     std::cout<<"Number of Digits: "<<std::endl;
     std::cout<<numdigits.c_str()<<std::endl;

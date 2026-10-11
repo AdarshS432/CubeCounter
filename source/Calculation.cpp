@@ -10,6 +10,8 @@ cpp_int Fact7X3to6;
 
 constexpr uint PRECISION_MAX = 64;
 
+using namespace std::string_literals;
+
 static cpp_int factorial(unsigned int n) {
     cpp_int result = 1;
     for(unsigned int i = 2; i <= n; ++i) result *= i;
@@ -74,24 +76,37 @@ std::string Calculation::returnScientific(const cpp_int& i, int size, int precis
     std::string str = f.str(exp, 10, precision+1);*/
     int digits = returnNumDigits(size);
     int exp = digits - 1;
-    std::cout<<"Calculated Digits and Exp"<<std::endl;
+    //std::cout<<"Calculated Digits and Exp"<<std::endl;
+    size_t msb_value = msb(i);
 
-    auto backend = i.backend();
-    size_t limb_count = backend.size();
-    //constexpr size_t limb_bits = sizeof(limb_bits) * 8;
-    unsigned long long first64 = backend.limbs()[limb_count - 1];
-    size_t shift_amount = (limb_count - 1) * bits_per_limb;
-
-    cpp_float mantissa;
-    if(limb_count > 1) {
-        unsigned long long next64 = backend.limbs()[limb_count - 2];
-        mantissa = cpp_float(first64) + ldexp(cpp_float(next64), -static_cast<int>(bits_per_limb));
+    constexpr double conversion = 3.32192809489;
+    size_t bit_precision = precision * conversion + 64;
+    cpp_int truncated;
+    int shift_amount = 0;
+    if(msb_value > bit_precision) {
+        shift_amount = msb_value - bit_precision;
+        truncated = i >> shift_amount;
     } else {
-        mantissa = cpp_float(first64);
+        truncated = i;
     }
-    cpp_float leading = ldexp(mantissa, static_cast<int>(shift_amount)) / exp;
+    cpp_float converted = truncated.convert_to<cpp_float>();
+    cpp_float scaled = ldexp(converted, shift_amount);
+    std::ostringstream oss;
+    oss<<scaled<<std::endl;
+    return oss.str();
+    //constexpr size_t limb_bits = sizeof(limb_bits) * 8;
 
-    return leading.str();
+    /*cpp_int power = pow(cpp_int(10), exp - precision);
+    cpp_int quotient = i / (power - 1); //Integer Division, power - 1 for rounding
+    cpp_int mod = quotient % 10;
+
+    cpp_int add = 0;
+    if(mod >= 5) {
+        add = 10 - mod;
+    }
+    quotient += add;
+    std::string quotient_str = quotient.str();
+    return std::string(quotient_str[0] + "."s + quotient_str.substr(1) + "e+"s + std::to_string(exp));*/
 
     /*bool negative = (i_str[0] == '-');
     if(negative) i_str = i_str.substr(1);
