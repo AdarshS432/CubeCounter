@@ -77,7 +77,8 @@ int main(int argc, char* argv[]) {
         if(file.is_open()) {
             file<<"Size of Cube: "<<LAYERS<<std::endl;
             file<<"Number of Combinations: "<<std::endl;
-            file<<number<<std::endl;
+            file.write(number.get_str().c_str(), std::stoi(numdigits)+1);
+            file<<'\n';
             file<<"Number of Combinations (Scientific): "<<std::endl;
             numcombos_scientific[strcspn(numcombos_scientific.c_str(), "\n")] = '\0';
             file<<numcombos_scientific<<std::endl;

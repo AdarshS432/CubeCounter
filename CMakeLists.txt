@@ -6,6 +6,9 @@ option(OPEN_CMD "Open the command line interface with GUI" OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+endif()
 project(CubeCounter VERSION 0.1.0 LANGUAGES C CXX)
 
 include(FetchContent) # TEMPORARY FOR FETCHCONTENT TESTING

@@ -87,6 +87,28 @@ cpp_int Calculation::Calculate(int i) {
 */
 
 
+std::string Calculation::returnString10(mpz_class i) {
+    return i.get_str(10);
+}
+std::string Calculation::returnScientific(mpz_class i, int precision) {
+    if(i == 1_mpz) return "1E0";
+    mpf_class f(i, (precision+10) * 4);
+    mp_exp_t exp;
+
+    std::string str = f.get_str(exp, 10, precision+1);
+
+    bool negative = (str[0] == '-');
+    if(negative) str = str.substr(1);
+    std::string result = (negative ? "-" : "");
+    result += str[0];
+    result += '.';
+    if(str.length() > 1) {
+        result += str.substr(1, precision);
+    } 
+    result += "e+" + std::to_string(exp-1);
+    return result;
+}
+
 
 std::string Calculation::returnString10(const cpp_int& i) {
     return i.str();
@@ -121,28 +143,6 @@ std::string Calculation::returnScientific(const cpp_int& i, int size, int precis
     std::ostringstream oss;
     oss<<scaled<<std::endl;
     return oss.str();
-}
-
-std::string Calculation::returnString10(mpz_class i) {
-    return i.get_str(10);
-}
-std::string Calculation::returnScientific(mpz_class i, int precision) {
-    if(i == 1_mpz) return "1E0";
-    mpf_class f(i, (precision+10) * 4);
-    mp_exp_t exp;
-
-    std::string str = f.get_str(exp, 10, precision+1);
-
-    bool negative = (str[0] == '-');
-    if(negative) str = str.substr(1);
-    std::string result = (negative ? "-" : "");
-    result += str[0];
-    result += '.';
-    if(str.length() > 1) {
-        result += str.substr(1, precision);
-    } 
-    result += "E" + std::to_string(exp-1);
-    return result;
 }
 
 
