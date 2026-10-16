@@ -10,7 +10,24 @@ $$\Large
 $$
 
 The above formula is actually very intuitive, and can be derived using combinatorics. Its derivation is explained on many sources online.
-As expected from the many factorials and exponents in this formula, it grows very fast. In fact, by N = 3 (which represents the 3x3x3 Rubik's Cube), the value is already approx. $4.3 \times 10^{19}$. Programming languages such as C or C++, despite their speed, do not allow the user to calculate past $2^{64}$, which is for good reasons. However, such numbers are required to calculate the value of the formula for higher values of N. 
+As expected from the many factorials and exponents in this formula, it grows very fast. In fact, by N = 3 (which represents the 3x3x3 Rubik's Cube), the value is already approx. $4.3 \times 10^{19}$. Programming languages such as C or C++, despite their speed, do not allow the user to calculate past $2^{64}$, which is for good reasons. However, such numbers are required to calculate the value of the formula for higher values of N. CubeCounter uses powerful libraries and provides a visual representation of the cube so the true scale of these numbers can be appreciated. 
+CubeCounter not only contributes to this formula, but can also improve the field of number theory, by analyzing the many patterns that appear within these numbers, some of which are described below. 
+
+## Formulas
+Number of combinations on NxNxN Cube (not created by CubeCounter):
+$$\Large
+7! \cdot 3^6 \cdot (24 \cdot 2^10 \cdot 12!)^{N \bmod 2} \cdot 24^{\lfloor \frac{N-2}{2} \rfloor} \cdot (24!/4!^6)^{{\lfloor (\frac{N-2}{2})^2} \rfloor}
+$$
+
+Number of Digits in the Result (Using Logarithm of Combination Formula):
+$$
+\operatorname{floor}\left(6.56515806476\ +\operatorname{mod}\left(N,2\right)13.0708481624+\operatorname{floor}\left(\frac{N-2}{2}\right)23.7927056702+\operatorname{floor}\left(\left(\frac{N-2}{2}\right)^{2}\right)15.5114382199\right)+1
+$$
+
+Number of Trailing Zeros in the Result:
+$$
+\left(N-\left(\operatorname{mod}\left(N,2\right)+1\right)\right)^{2}+2\operatorname{mod}\left(N,2\right)
+$$
 
 **IF YOU OWN A CPU THAT CONTAINS Zen 5 CORES, PLEASE READ BELOW:**
 
