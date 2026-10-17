@@ -93,11 +93,13 @@ The CLI version has options to control the calculation and output:
 
 Cube Size: `--layercount [NUMBER]`
 
-Print Full Number (this may print a very large number): `--printfullnumber true` or `--printfullnumber 1`
+Print Full Number (this may print a very large number): `--printfullnumber`
 
 Scientific Notation Precision (number of digits after decimal point): `--precision [NUMBER]`, Note: the number must be less than or equal to 64.
 
 Write Output to File: `--file [PATH]`
+
+Append Output to File: `--append` Note: This command places deshes (-) before the start of each file so that it is separated.
 
 
 **IF YOU OWN A CPU THAT CONTAINS Zen 5 CORES, PLEASE READ BELOW:**

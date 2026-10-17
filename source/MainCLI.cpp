@@ -7,6 +7,9 @@ int LAYERS = 3;
 int PRECISION = 4;
 bool PRINTFULLNUMBER = false;
 bool WRITE_TO_FILE = false;
+
+bool APPEND = false;
+bool OVERWRITE = false; 
 const char* FILE_PATH;
 
 //static cpp_int number;
@@ -28,12 +31,7 @@ int main(int argc, char* argv[]) {
             LAYERS = std::stoi(argv[i+1]);
         }
         if(arg == "--printfullnumber") {
-            if(i == argc-1) {
-                std::cerr<<"[ERROR] No Boolean Provided"<<std::endl;
-                return -1;
-            }
-            std::string arg1 = argv[i+1];
-            PRINTFULLNUMBER = (arg1 == "true" || arg1 == "1");
+            PRINTFULLNUMBER = true;
         }
         if(arg == "--precision") {
             if(i == argc-1) {
@@ -50,6 +48,24 @@ int main(int argc, char* argv[]) {
             WRITE_TO_FILE = true;
             FILE_PATH = argv[i+1];
         }
+        if(arg == "--append") {
+            APPEND = true;
+        }
+        if(arg == "--overwrite") {
+            OVERWRITE = true;
+        }
+    }
+    if((APPEND || OVERWRITE) && !WRITE_TO_FILE) {
+        std::cerr<<"[ERROR] Append/Overwrite Selected Without Write To File Enabled"<<std::endl;
+        return -1;
+    }
+    if(!APPEND && !OVERWRITE && WRITE_TO_FILE) {
+        std::cerr<<"[ERROR] No Write Mode Selected (--append/--overwrite)"<<std::endl;
+        return -1;
+    }
+    if(APPEND && OVERWRITE) {
+        std::cerr<<"[ERROR] Both Append and Overwrite Selected"<<std::endl;
+        return -1;
     }
 
     Calculation calculation = Calculation();
@@ -73,12 +89,24 @@ int main(int argc, char* argv[]) {
 
     if(WRITE_TO_FILE) {
         std::cout<<"Writing to File [1/1]"<<std::endl;
-        std::ofstream file(FILE_PATH);
+
+        std::ios::openmode mode;
+        if(APPEND) {
+            mode = std::ios::app;
+        }
+        if(OVERWRITE) {
+            mode = std::ios::trunc;
+        }
+
+        std::ofstream file(FILE_PATH, mode);
         if(file.is_open()) {
+            if(APPEND) {
+                file<<"-----------------------------------------"<<std::endl;
+            }
             file<<"Size of Cube: "<<LAYERS<<std::endl;
             file<<"Number of Combinations: "<<std::endl;
-            file.write(number.get_str().c_str(), std::stoi(numdigits)+1);
-            file<<'\n';
+            file.write(number.get_str().c_str(), std::stoi(numdigits));
+            file<<std::endl;
             file<<"Number of Combinations (Scientific): "<<std::endl;
             numcombos_scientific[strcspn(numcombos_scientific.c_str(), "\n")] = '\0';
             file<<numcombos_scientific<<std::endl;
