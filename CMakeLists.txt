@@ -11,20 +11,18 @@ if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 endif()
 project(CubeCounter VERSION 0.1.0 LANGUAGES C CXX)
 
-include(FetchContent) # TEMPORARY FOR FETCHCONTENT TESTING
+include(FetchContent) 
 
 find_library(GMP_LIBRARY NAMES gmp libgmp REQUIRED)
 find_library(GMPXX_LIBRARY NAMES gmpxx libgmpxx REQUIRED)
 find_path(GMP_INCLUDE NAMES gmpxx.h REQUIRED)
 
-# >>> TEMPORARY BOOST.MP TEST DEPENDENCY: remove this block if not adopting Boost.
 FetchContent_Declare(boost_multiprecision
     GIT_REPOSITORY https://github.com/boostorg/multiprecision.git
     GIT_TAG Boost_1_92_0
     GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(boost_multiprecision)
-# <<< TEMPORARY BOOST.MP TEST DEPENDENCY
 
 if(BUILD_GUI) 
     set(SDL_TESTS OFF CACHE BOOL "" FORCE)
@@ -84,12 +82,13 @@ if(BUILD_GUI)
     find_package(OpenGL REQUIRED)
     #find_package(gmp REQUIRED)
 
-    add_library(glad STATIC "source/glad/glad.c")
-    target_include_directories(glad PUBLIC include)
+    #add_library(glad STATIC "source/glad/glad.c")
+    #target_include_directories(glad PUBLIC include)
 
     file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS
         "source/*.cpp"
         "source/*.c"
+        "glad/src/glad.c"
     )
     list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/MainCLI.cpp")
 
@@ -104,11 +103,11 @@ if(BUILD_GUI)
     target_compile_definitions(CubeCounter PRIVATE __GMP_WITHIN_GMP)
     target_include_directories(CubeCounter PRIVATE ${GMP_INCLUDE} include)
     target_include_directories(CubeCounter PRIVATE include)
+    target_include_directories(CubeCounter PRIVATE glad/include)
 
     target_link_libraries(CubeCounter PRIVATE 
         SDL3::SDL3
         glm::glm 
-        glad 
         ${GMP_LIBRARY}
         Boost::multiprecision
         OpenGL::GL
