@@ -41,6 +41,7 @@ Calculation::Calculation() {
 }
 */
 mpz_class Calculation::Calculate(int i) {
+    if(i == 0) return 0_mpz;
     if(i == 1) return 1_mpz;
     mpz_class Base = 24_mpz * (1<<10) * Factorial12;
     
@@ -91,7 +92,8 @@ std::string Calculation::returnString10(mpz_class i) {
     return i.get_str(10);
 }
 std::string Calculation::returnScientific(mpz_class i, int precision) {
-    if(i == 1_mpz) return "1E0";
+    if(i == 0_mpz) return "0e+0";
+    if(i == 1_mpz) return "1e+0";
     mpf_class f(i, (precision+10) * 4);
     mp_exp_t exp;
 

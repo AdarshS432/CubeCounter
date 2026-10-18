@@ -54,7 +54,8 @@ First, clone the git repository into a directory: `git clone https://github.com/
 Move into the cloned directory: `cd CubeCounter` (or OS equivalent)
 
 Use CMake to configure the project. Available presets:
-    ```
+
+    
     "main"              - Custom configure preset
     "windows-mingw"     - Windows Mingw
     "linux-gcc"         - Linux GCC
@@ -62,7 +63,7 @@ Use CMake to configure the project. Available presets:
     "windows-mingw-cli" - Windows Mingw CLI-Only
     "linux-gcc-cli"     - Linux GCC CLI-Only
     "macos-clang-cli"   - MacOS Clang CLI-Only
-    ```
+    
 
 When configuring, make sure to set the BUILD_GUI option (requires OpenGL). Set this to `OFF` for a cli-only build. 
 
