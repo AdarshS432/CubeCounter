@@ -13,9 +13,10 @@ project(CubeCounter VERSION 0.1.0 LANGUAGES C CXX)
 
 include(FetchContent) 
 
-find_library(GMP_LIBRARY NAMES gmp libgmp REQUIRED)
-find_library(GMPXX_LIBRARY NAMES gmpxx libgmpxx REQUIRED)
-find_path(GMP_INCLUDE NAMES gmpxx.h REQUIRED)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+#find_library(GMP_LIBRARY NAMES gmp libgmp REQUIRED)
+#find_library(GMPXX_LIBRARY NAMES gmpxx libgmpxx REQUIRED)
+#find_path(GMP_INCLUDE NAMES gmpxx.h REQUIRED)
 
 FetchContent_Declare(boost_multiprecision
     GIT_REPOSITORY https://github.com/boostorg/multiprecision.git
@@ -57,10 +58,7 @@ if(BUILD_GUI)
         GIT_TAG v1.92.9b
         GIT_SHALLOW TRUE
     )
-    FetchContent_GetProperties(imgui)
-    if(NOT imgui_POPULATED)
-        FetchContent_Populate(imgui)
-    endif()
+    FetchContent_MakeAvailable(imgui)
 
     add_library(imgui STATIC
         "${imgui_SOURCE_DIR}/imgui.cpp"
@@ -100,8 +98,8 @@ if(BUILD_GUI)
         add_executable(CubeCounter WIN32 MACOSX_BUNDLE ${SOURCES})
     endif()
 
-    target_compile_definitions(CubeCounter PRIVATE __GMP_WITHIN_GMP)
-    target_include_directories(CubeCounter PRIVATE ${GMP_INCLUDE} include)
+    #target_compile_definitions(CubeCounter PRIVATE __GMP_WITHIN_GMP)
+    target_include_directories(CubeCounter PRIVATE GMP_INCLUDE_DIR)
     target_include_directories(CubeCounter PRIVATE include)
     target_include_directories(CubeCounter PRIVATE glad/include)
 
@@ -120,8 +118,8 @@ add_executable(cubecounter-cli
     "source/Calculation.cpp"
     "include/Calculation.h")
 target_include_directories(cubecounter-cli PRIVATE include)
-target_compile_definitions(cubecounter-cli PRIVATE __GMP_WITHIN_GMP)
-target_include_directories(cubecounter-cli PRIVATE ${GMP_INCLUDE})
+#target_compile_definitions(cubecounter-cli PRIVATE __GMP_WITHIN_GMP)
+target_include_directories(cubecounter-cli PRIVATE GMP_INCLUDE_DIR)
 target_link_libraries(cubecounter-cli PRIVATE 
 
     Boost::multiprecision
