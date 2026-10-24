@@ -13,10 +13,10 @@ project(CubeCounter VERSION 0.1.0 LANGUAGES C CXX)
 
 include(FetchContent) 
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-#find_library(GMP_LIBRARY NAMES gmp libgmp REQUIRED)
-#find_library(GMPXX_LIBRARY NAMES gmpxx libgmpxx REQUIRED)
-#find_path(GMP_INCLUDE NAMES gmpxx.h REQUIRED)
+#list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+find_library(GMP_LIBRARY NAMES gmp libgmp REQUIRED)
+find_library(GMPXX_LIBRARY NAMES gmpxx libgmpxx REQUIRED)
+find_path(GMP_INCLUDE NAMES gmpxx.h REQUIRED)
 
 FetchContent_Declare(boost_multiprecision
     GIT_REPOSITORY https://github.com/boostorg/multiprecision.git
