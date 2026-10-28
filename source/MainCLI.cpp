@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <memory>
+
 #include <Calculation.h>
 
 int LAYERS = 3;
@@ -11,6 +13,13 @@ bool WRITE_TO_FILE = false;
 bool APPEND = false;
 bool OVERWRITE = false; 
 const char* FILE_PATH;
+
+enum class CubeType {
+    _RubiksCube = 0,
+    _Pyraminx = 1,
+    _DodecagonMinx = 2
+};
+CubeType selected_cube;
 
 //static cpp_int number;
 static mpz_class number;
@@ -23,6 +32,19 @@ static std::string numtrailzeros;
 int main(int argc, char* argv[]) {
     for(int i=0; i<argc; i++) {
         std::string arg = argv[i];
+        if(arg == "--cube") {
+            if(i == argc - 1) {
+                std::cerr<<"[ERROR] No Cube Type Provided"<<std::endl;
+            }
+            std::string arg1 = argv[i+1];
+            if(arg1 == "Rubik" || arg1 == "R") {
+                selected_cube = CubeType::_RubiksCube;
+            } else if(arg1 == "Pyraminx" || arg1 == "P") {
+                selected_cube = CubeType::_Pyraminx;
+            } else if(arg1 == "Minx" || arg1 == "Dodecagon" || arg1 == "M" || arg1 == "D") {
+                selected_cube = CubeType::_DodecagonMinx;
+            }
+        }
         if(arg == "--layercount") {
             if(i == argc-1) {
                 std::cerr<<"[ERROR] No Layer Count Provided"<<std::endl;
@@ -68,23 +90,32 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    Calculation calculation = Calculation();
+    std::unique_ptr<Calculation> calculation;   
+
+    switch(selected_cube) {
+        case CubeType::_RubiksCube:
+            calculation = std::make_unique<RubiksCube>();
+        case CubeType::_Pyraminx:
+            calculation = std::make_unique<Pyraminx>();
+        case CubeType::_DodecagonMinx:
+            calculation = std::make_unique<DodecagonMinx>();
+    }
 
     std::cout<<"Calculating Number Of Combinations [1/5]"<<std::endl;
-    number = calculation.Calculate(LAYERS);
+    number = calculation->Calculate(LAYERS);
 
     std::cout<<"Converting to String [2/5]"<<std::endl;
-    if(calculation.returnNumDigits(LAYERS) < 50 || PRINTFULLNUMBER) numcombos = number.get_str();
+    if(calculation->returnNumDigits(LAYERS) < 50 || PRINTFULLNUMBER) numcombos = number.get_str();
     else std::cout<<"[Info] Skipping Conversion. Use '--printfullnumber 1' or '--printfullnumber true' to print the entire number"<<std::endl;
 
     std::cout<<"Calculating Scientific Notation and Formatting [3/5]"<<std::endl;
-    numcombos_scientific = calculation.returnScientific(number, PRECISION);
+    numcombos_scientific = calculation->returnScientific(number, PRECISION);
 
     std::cout<<"Calculating Number of Digits [4/5]"<<std::endl;
-    numdigits = std::to_string(calculation.returnNumDigits(LAYERS));
+    numdigits = std::to_string(calculation->returnNumDigits(LAYERS));
 
     std::cout<<"Calculating Number Of Trailing Zeros [5/5]"<<std::endl;
-    numtrailzeros = std::to_string(calculation.returnTrailingZeros(LAYERS));
+    numtrailzeros = std::to_string(calculation->returnTrailingZeros(LAYERS));
     std::cout<<"-----------------------------------------"<<std::endl;
 
     if(WRITE_TO_FILE) {
@@ -129,7 +160,7 @@ int main(int argc, char* argv[]) {
     std::cout<<"-----------------------------------------"<<std::endl;
     std::cout<<"Size of Cube: "<<LAYERS<<std::endl;
     std::cout<<"Number of Combinations: "<<std::endl;
-    if(calculation.returnNumDigits(LAYERS) < 50 || PRINTFULLNUMBER) {
+    if(calculation->returnNumDigits(LAYERS) < 50 || PRINTFULLNUMBER) {
         std::cout<<numcombos.c_str()<<std::endl;
     } else {
         std::cout<<"[Info] Number too large to display fully."<<std::endl;

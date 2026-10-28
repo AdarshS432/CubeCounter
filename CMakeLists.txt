@@ -6,9 +6,6 @@ option(OPEN_CMD "Open the command line interface with GUI" OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
-endif()
 project(CubeCounter VERSION 0.1.0 LANGUAGES C CXX)
 
 include(FetchContent) 
@@ -85,17 +82,22 @@ if(BUILD_GUI)
 
     file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS
         "source/*.cpp"
-        "source/*.c"
+        "source/*.c" 
         "glad/src/glad.c"
     )
+
+    file(GLOB_RECURSE CUBES CMAKE_CONFIGURE_DEPENDS
+        "source/cubes/*.cpp"
+    )
+
     list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source/MainCLI.cpp")
 
     file(COPY "shaders" DESTINATION "${CMAKE_BINARY_DIR}")
     file(COPY "Fonts" DESTINATION "${CMAKE_BINARY_DIR}")
     if(OPEN_CMD)
-        add_executable(CubeCounter ${SOURCES})
+        add_executable(CubeCounter ${SOURCES} ${CUBES})
     else()
-        add_executable(CubeCounter WIN32 MACOSX_BUNDLE ${SOURCES})
+        add_executable(CubeCounter WIN32 MACOSX_BUNDLE ${SOURCES} ${CUBES})
     endif()
 
     #target_compile_definitions(CubeCounter PRIVATE __GMP_WITHIN_GMP)
@@ -115,8 +117,9 @@ endif()
 
 add_executable(cubecounter-cli 
     "source/MainCLI.cpp"
-    "source/Calculation.cpp"
-    "include/Calculation.h")
+    "include/Calculation.h"
+    ${CUBES}
+    )
 target_include_directories(cubecounter-cli PRIVATE include)
 #target_compile_definitions(cubecounter-cli PRIVATE __GMP_WITHIN_GMP)
 target_include_directories(cubecounter-cli PRIVATE GMP_INCLUDE_DIR)

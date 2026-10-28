@@ -7,9 +7,7 @@
 /*cpp_int Factorial24;
 cpp_int Factorial12;
 cpp_int Fact7X3to6;*/
-mpz_class Factorial24, Factorial12, Fact7X3to6;
-
-constexpr uint PRECISION_MAX = 64;
+inline mpz_class Factorial24, Factorial12, Fact7X3to6;
 
 using namespace std::string_literals;
 
@@ -28,19 +26,19 @@ static cpp_int integerPower(cpp_int base, unsigned long exponent) {
     }
     return result;
 }
-Calculation::Calculation() {
+RubiksCube::RubiksCube() {
     Factorial24 = factorial(24_mpz);
     Factorial12 = factorial(12_mpz);
     Fact7X3to6 = factorial(7_mpz) * (int)pow(3, 6); 
 }
 /*
-Calculation::Calculation() {
+RubiksCube::Calculation() {
     Factorial24 = factorial(24);
     Factorial12 = factorial(12);
     Fact7X3to6 = factorial(7) * 729;
 }
 */
-mpz_class Calculation::Calculate(int i) {
+mpz_class RubiksCube::Calculate(int i) {
     if(i == 0) return 0_mpz;
     if(i == 1) return 1_mpz;
     mpz_class Base = 24_mpz * (1<<10) * Factorial12;
@@ -62,7 +60,7 @@ mpz_class Calculation::Calculate(int i) {
     return FinalNumber;
 }
 /*
-cpp_int Calculation::Calculate(int i) {
+cpp_int RubiksCube::Calculate(int i) {
     if(i == 0) return 0;
     if(i == 1) return 1;
     cpp_int Base = 24 * (1<<10) * Factorial12;
@@ -88,10 +86,10 @@ cpp_int Calculation::Calculate(int i) {
 */
 
 
-std::string Calculation::returnString10(mpz_class i) {
+std::string RubiksCube::returnString10(mpz_class i) {
     return i.get_str(10);
 }
-std::string Calculation::returnScientific(mpz_class i, int precision) {
+std::string RubiksCube::returnScientific(mpz_class i, int precision) {
     if(i == 0_mpz) return "0e+0";
     if(i == 1_mpz) return "1e+0";
     mpf_class f(i, (precision+10) * 4);
@@ -112,10 +110,10 @@ std::string Calculation::returnScientific(mpz_class i, int precision) {
 }
 
 
-std::string Calculation::returnString10(const cpp_int& i) {
+std::string RubiksCube::returnString10(const cpp_int& i) {
     return i.str();
 }
-std::string Calculation::returnScientific(const cpp_int& i, int size, int precision) {
+std::string RubiksCube::returnScientific(const cpp_int& i, int size, int precision) {
     if(i == 0) return "0E0";
     if(i == 1) return "1E0";
 
@@ -148,7 +146,7 @@ std::string Calculation::returnScientific(const cpp_int& i, int size, int precis
 }
 
 
-int Calculation::returnNumDigits(int i) {
+int RubiksCube::returnNumDigits(int i) {
     if(i == 0) return 0;
     if(i == 1) return 1;
     double a = 6.56515806476;
@@ -158,7 +156,7 @@ int Calculation::returnNumDigits(int i) {
 
     return floor(a + (i%2)*b + std::floor((i-2)/2)*c + std::floor(pow((i-2)/2.0,2))*d) + 1;
 }
-int Calculation::returnTrailingZeros(int i) {
+int RubiksCube::returnTrailingZeros(int i) {
     if(i <= 1) return 0;
     return std::pow(i-((i%2) + 1), 2) + 2*(i%2);
 }

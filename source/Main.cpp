@@ -24,7 +24,7 @@ vec3 rightVector;
 vec3 up = vec3(0.0f, 1.0f, 0.0f);
 
 Array cubearray;
-Calculation calc;
+RubiksCube calc;
 
 float yaw = -90.0f;
 float pitch = 0.0f;
@@ -119,7 +119,7 @@ int main(int argc, char* argv[]) {
     viewMatrix = lookAt(resetPos, vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
     projectionMatrix = perspective(radians(cubearray.FOV), 1152.0f / 648.0f, 0.1f, cubesize * 10.0f);
 
-    calc = Calculation();
+    calc = RubiksCube();
     cubearray = Array(cubesize, viewMatrix, projectionMatrix, false);
     UI ui = UI(window, context, const_cast<const char*>("#version 330 core"), cubearray, calc);
     
