@@ -7,8 +7,10 @@
 /*cpp_int Factorial24;
 cpp_int Factorial12;
 cpp_int Fact7X3to6;*/
-inline mpz_class Factorial24, Factorial12, Fact7X3to6;
 
+//Odd: 30! × 20! × (60!)^(m²−1) × 2^(28−m) × 3¹⁹ ÷ (5!)^(12m²−12m), L = 2m + 1
+//Even: ((19! / 2) × 3¹⁸) × (60! / 2)^(m−1) × (60! / (5!)¹²)^((m−1)²), L = 2m
+//Source: https://speedcubing.org/blogs/news/number-of-combinations-calculator
 using namespace std::string_literals;
 
 static cpp_int factorial(unsigned int n) {
@@ -27,9 +29,7 @@ static cpp_int integerPower(cpp_int base, unsigned long exponent) {
     return result;
 }
 DodecagonMinx::DodecagonMinx() {
-    Factorial24 = factorial(24_mpz);
-    Factorial12 = factorial(12_mpz);
-    Fact7X3to6 = factorial(7_mpz) * (int)pow(3, 6); 
+
 }
 cpp_int DodecagonMinx::CalculateBoost(int i) {return 0;}
 /*
@@ -42,23 +42,8 @@ DodecagonMinx::Calculation() {
 mpz_class DodecagonMinx::Calculate(int i) {
     if(i == 0) return 0_mpz;
     if(i == 1) return 1_mpz;
-    mpz_class Base = 24_mpz * (1<<10) * Factorial12;
-    
-    mpz_class OddComponent;
-    mpz_pow_ui(OddComponent.get_mpz_t(), Base.get_mpz_t(), i%2);
 
-    mpz_class FlooredComponent;
-    mpz_pow_ui(FlooredComponent.get_mpz_t(), Factorial24.get_mpz_t(), floor((i-2)/2));
 
-    mpz_class FinalComponent;
-    mpz_class FinalBase;
-    mpz_class Fact4to6;
-    mpz_pow_ui(Fact4to6.get_mpz_t(), ((mpz_class)factorial(4_mpz)).get_mpz_t(), 6);
-    FinalBase = Factorial24 / Fact4to6;
-    mpz_pow_ui(FinalComponent.get_mpz_t(), FinalBase.get_mpz_t(), floor(pow((i-2)/2.0, 2)));
-
-    mpz_class FinalNumber = Fact7X3to6 * OddComponent * FlooredComponent * FinalComponent;
-    return FinalNumber;
 }
 /*
 cpp_int DodecagonMinx::Calculate(int i) {

@@ -12,7 +12,10 @@ namespace bst = boost::multiprecision;
 cpp_int Factorial12;
 cpp_int Fact7X3to6;*/
 
-//5 × 2^(2n²−3n−1) × 3^(n²/3+3n−16/3) × 1925^(n²/3−n−1/3) * 81, Source: https://speedcubing.org/blogs/news/number-of-combinations-calculator
+//5 × 2^(2n²−3n−1) × 3^(n²/3+3n−6) × 1925^(n²/3−n) × 81, 
+//n mod 3 > 0: 5 × 2^(2n²−3n−1) × 3^(n²/3+3n−16/3) × 1925^(n²/3−n−1/3) 
+//Source: https://speedcubing.org/blogs/news/number-of-combinations-calculator
+
 inline mpz_class Pow2Calculation, Pow3Calculation, Pow1925Calculation;
 
 using namespace std::string_literals;
@@ -64,15 +67,32 @@ mpz_class Pyraminx::Calculate(int i) {
 
     bst::mpz_int Int = i;
 
-    bst::mpz_int Polynomial1 = 2*bst::pow(Int, 2) - 3*Int - 1;
-    bst::mpz_int Polynomial2 = (bst::pow(Int, 2) + 9*Int - 16) / 3; //Multiplying and Dividing by 3 Avoids Int Truncation
-    bst::mpz_int Polynomial3 = (bst::pow(Int, 2) - 3*Int - 1) / 3;
+    bst::mpz_int Polynomial1, Polynomial2, Polynomial3;
 
-    bst::mpz_int Term1 = integerPower_mpz(2, Polynomial1);
-    bst::mpz_int Term2 = integerPower_mpz(3, Polynomial2);
-    bst::mpz_int Term3 = integerPower_mpz(1925, Polynomial3);
+    const bst::mpz_int bst_1 = 1;
+    const bst::mpz_int bst_2 = 2;
+    const bst::mpz_int bst_3 = 3;
+    const bst::mpz_int bst_9 = 9;
+    const bst::mpz_int bst_16 = 16;
+    const bst::mpz_int bst_18 = 18;
+
+    const bst::mpz_int Int2 = Int * Int;
+
+    if(i % 3 == 0) {
+        Polynomial1 = bst_2*Int2 - bst_3*Int - bst_1;
+        Polynomial2 = (Int2 + bst_9*Int - bst_18) / bst_3; //Multiplying and Dividing by 3 Avoids Int Truncation
+        Polynomial3 = (Int2 - bst_3*Int) / bst_3;
+    } else {
+        Polynomial1 = bst_2*Int2 - bst_3*Int - bst_1;
+        Polynomial2 = (Int2 + bst_9*Int - bst_16) / bst_3; //Multiplying and Dividing by 3 Avoids Int Truncation
+        Polynomial3 = (Int2 - bst_3*Int - bst_1) / bst_3;
+    }
+
+    bst::mpz_int Term1 = bst::pow(bst::mpz_int(2), Polynomial1.convert_to<unsigned long long>());
+    bst::mpz_int Term2 = bst::pow(bst::mpz_int(3), Polynomial2.convert_to<unsigned long long>());
+    bst::mpz_int Term3 = bst::pow(bst::mpz_int(1925), Polynomial3.convert_to<unsigned long long>());
     
-    bst::mpz_int FinalNumber = 5 * Term1 * Term2 * Term3 * 81;
+    bst::mpz_int FinalNumber = bst::mpz_int(5) * Term1 * Term2 * Term3 * bst::mpz_int(81);
     /*mpz_pow(Pow2Calculation.get_mpz_t(), 2_mpz, Int);
     mpz_ui_pow_ui()
 
@@ -92,7 +112,10 @@ mpz_class Pyraminx::Calculate(int i) {
     mpz_pow_ui(FinalComponent.get_mpz_t(), FinalBase.get_mpz_t(), floor(pow((i-2)/2.0, 2)));
 
     mpz_class FinalNumber = Fact7X3to6 * OddComponent * FlooredComponent * FinalComponent;*/
-    return FinalNumber.convert_to<mpz_class>();
+    mpz_class out;
+    mpz_set(out.get_mpz_t(), (mpz_srcptr)FinalNumber.backend().data());
+
+    return out;
 }
 /*
 cpp_int Pyraminx::Calculate(int i) {
@@ -184,14 +207,13 @@ std::string Pyraminx::returnScientific(const cpp_int& i, int size, int precision
 int Pyraminx::returnNumDigits(int i) {
     if(i == 0) return 0;
     if(i == 1) return 1;
-    double a = 6.56515806476;
-    double b = 13.0708481624;
-    double c = 23.7927056702;
-    double d = 15.5114382199;
-
-    return floor(a + (i%2)*b + std::floor((i-2)/2)*c + std::floor(pow((i-2)/2.0,2))*d) + 1;
+    if(i % 3 != 0) {
+        return 11.0/6.0 * (i*i) - 2.5 * i - 4.0/3.0;
+    } else {
+        return 1.0/162.0 * (i*i*i) + 31.0/18.0 * (i*i) - 17.0/9.0*(i) - 2.0;
+    }
 }
 int Pyraminx::returnTrailingZeros(int i) {
     if(i <= 1) return 0;
-    return std::pow(i-((i%2) + 1), 2) + 2*(i%2);
+    return static_cast<int>(2.0/3.0 * (i*i) - 2.0 * i + (i%3 == 0 ? 1.0 : 1.0/3.0));
 }
