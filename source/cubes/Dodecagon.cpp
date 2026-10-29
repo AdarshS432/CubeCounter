@@ -31,6 +31,7 @@ DodecagonMinx::DodecagonMinx() {
     Factorial12 = factorial(12_mpz);
     Fact7X3to6 = factorial(7_mpz) * (int)pow(3, 6); 
 }
+cpp_int DodecagonMinx::CalculateBoost(int i) {return 0;}
 /*
 DodecagonMinx::Calculation() {
     Factorial24 = factorial(24);

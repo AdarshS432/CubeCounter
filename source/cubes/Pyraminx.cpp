@@ -1,13 +1,19 @@
 #include <Calculation.h>
 #include <format>
 #include <algorithm>
-#include <cmath>
+//#include <cmath>
 #include <string>
+
+#include <boost/multiprecision/gmp.hpp>
+
+namespace bst = boost::multiprecision;
 
 /*cpp_int Factorial24;
 cpp_int Factorial12;
 cpp_int Fact7X3to6;*/
-inline mpz_class Factorial24, Factorial12, Fact7X3to6;
+
+//5 × 2^(2n²−3n−1) × 3^(n²/3+3n−16/3) × 1925^(n²/3−n−1/3) * 81, Source: https://speedcubing.org/blogs/news/number-of-combinations-calculator
+inline mpz_class Pow2Calculation, Pow3Calculation, Pow1925Calculation;
 
 using namespace std::string_literals;
 
@@ -26,11 +32,20 @@ static cpp_int integerPower(cpp_int base, unsigned long exponent) {
     }
     return result;
 }
-Pyraminx::Pyraminx() {
-    Factorial24 = factorial(24_mpz);
-    Factorial12 = factorial(12_mpz);
-    Fact7X3to6 = factorial(7_mpz) * (int)pow(3, 6); 
+static bst::mpz_int integerPower_mpz(bst::mpz_int base_mpz, bst::mpz_int exponent) {
+    bst::mpz_int result = 1;
+    while(exponent > 0) {
+        if(bst::bit_test(exponent, 0)) result *= base_mpz;
+        exponent >>= 1;
+        if(exponent > 0) base_mpz *= base_mpz;
+    }
+    return result;
 }
+
+Pyraminx::Pyraminx() {
+
+}
+cpp_int Pyraminx::CalculateBoost(int i) {return 0;}
 /*
 Pyraminx::Calculation() {
     Factorial24 = factorial(24);
@@ -38,9 +53,29 @@ Pyraminx::Calculation() {
     Fact7X3to6 = factorial(7) * 729;
 }
 */
+mpz_class Power(mpz_t i, int j) {
+    mpz_class result;
+    mpz_pow_ui(result.get_mpz_t(), i, j);
+    return result;
+}
 mpz_class Pyraminx::Calculate(int i) {
     if(i == 0) return 0_mpz;
     if(i == 1) return 1_mpz;
+
+    bst::mpz_int Int = i;
+
+    bst::mpz_int Polynomial1 = 2*bst::pow(Int, 2) - 3*Int - 1;
+    bst::mpz_int Polynomial2 = (bst::pow(Int, 2) + 9*Int - 16) / 3; //Multiplying and Dividing by 3 Avoids Int Truncation
+    bst::mpz_int Polynomial3 = (bst::pow(Int, 2) - 3*Int - 1) / 3;
+
+    bst::mpz_int Term1 = integerPower_mpz(2, Polynomial1);
+    bst::mpz_int Term2 = integerPower_mpz(3, Polynomial2);
+    bst::mpz_int Term3 = integerPower_mpz(1925, Polynomial3);
+    
+    bst::mpz_int FinalNumber = 5 * Term1 * Term2 * Term3 * 81;
+    /*mpz_pow(Pow2Calculation.get_mpz_t(), 2_mpz, Int);
+    mpz_ui_pow_ui()
+
     mpz_class Base = 24_mpz * (1<<10) * Factorial12;
     
     mpz_class OddComponent;
@@ -56,8 +91,8 @@ mpz_class Pyraminx::Calculate(int i) {
     FinalBase = Factorial24 / Fact4to6;
     mpz_pow_ui(FinalComponent.get_mpz_t(), FinalBase.get_mpz_t(), floor(pow((i-2)/2.0, 2)));
 
-    mpz_class FinalNumber = Fact7X3to6 * OddComponent * FlooredComponent * FinalComponent;
-    return FinalNumber;
+    mpz_class FinalNumber = Fact7X3to6 * OddComponent * FlooredComponent * FinalComponent;*/
+    return FinalNumber.convert_to<mpz_class>();
 }
 /*
 cpp_int Pyraminx::Calculate(int i) {

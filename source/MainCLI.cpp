@@ -35,6 +35,7 @@ int main(int argc, char* argv[]) {
         if(arg == "--cube") {
             if(i == argc - 1) {
                 std::cerr<<"[ERROR] No Cube Type Provided"<<std::endl;
+                return -1;
             }
             std::string arg1 = argv[i+1];
             if(arg1 == "Rubik" || arg1 == "R") {
@@ -43,6 +44,9 @@ int main(int argc, char* argv[]) {
                 selected_cube = CubeType::_Pyraminx;
             } else if(arg1 == "Minx" || arg1 == "Dodecagon" || arg1 == "M" || arg1 == "D") {
                 selected_cube = CubeType::_DodecagonMinx;
+            } else {
+                std::cerr<<"[ERROR] Invalid Cube Type Provided"<<std::endl;
+                return -1;
             }
         }
         if(arg == "--layercount") {
@@ -95,10 +99,13 @@ int main(int argc, char* argv[]) {
     switch(selected_cube) {
         case CubeType::_RubiksCube:
             calculation = std::make_unique<RubiksCube>();
+            break;
         case CubeType::_Pyraminx:
             calculation = std::make_unique<Pyraminx>();
+            break;
         case CubeType::_DodecagonMinx:
             calculation = std::make_unique<DodecagonMinx>();
+            break;
     }
 
     std::cout<<"Calculating Number Of Combinations [1/5]"<<std::endl;

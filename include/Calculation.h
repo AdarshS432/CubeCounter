@@ -17,7 +17,7 @@ constexpr uint PRECISION_MAX = 64;
 class Calculation {
     public:
         int IDX;
-        ~Calculation() = default;
+        virtual ~Calculation() = default;
         
         virtual cpp_int CalculateBoost(int i) = 0;
         virtual mpz_class Calculate(int i) = 0;
@@ -34,7 +34,7 @@ class Calculation {
 class RubiksCube : public Calculation {
     public:
         RubiksCube();
-        ~RubiksCube() = default;
+        ~RubiksCube() override = default;
 
         cpp_int CalculateBoost(int i) override;
         mpz_class Calculate(int i) override;
@@ -51,7 +51,7 @@ class RubiksCube : public Calculation {
 class Pyraminx : public Calculation {
     public: 
         Pyraminx();
-        ~Pyraminx() = default;
+        ~Pyraminx() override = default;
 
         cpp_int CalculateBoost(int i) override;
         mpz_class Calculate(int i) override;
@@ -68,7 +68,7 @@ class Pyraminx : public Calculation {
 class DodecagonMinx : public Calculation {
     public: 
         DodecagonMinx();
-        ~DodecagonMinx() = default;
+        ~DodecagonMinx() override = default;
 
         cpp_int CalculateBoost(int i) override;
         mpz_class Calculate(int i) override;

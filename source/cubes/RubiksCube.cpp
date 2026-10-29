@@ -26,11 +26,12 @@ static cpp_int integerPower(cpp_int base, unsigned long exponent) {
     }
     return result;
 }
-RubiksCube::RubiksCube() {
+RubiksCube::RubiksCube() : Calculation() {
     Factorial24 = factorial(24_mpz);
     Factorial12 = factorial(12_mpz);
     Fact7X3to6 = factorial(7_mpz) * (int)pow(3, 6); 
 }
+cpp_int RubiksCube::CalculateBoost(int i) {return 0;}
 /*
 RubiksCube::Calculation() {
     Factorial24 = factorial(24);
