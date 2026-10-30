@@ -16,8 +16,6 @@ cpp_int Fact7X3to6;*/
 //n mod 3 > 0: 5 × 2^(2n²−3n−1) × 3^(n²/3+3n−16/3) × 1925^(n²/3−n−1/3) 
 //Source: https://speedcubing.org/blogs/news/number-of-combinations-calculator
 
-inline mpz_class Pow2Calculation, Pow3Calculation, Pow1925Calculation;
-
 using namespace std::string_literals;
 
 static cpp_int factorial(unsigned int n) {

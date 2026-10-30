@@ -1,8 +1,11 @@
 #include <Calculation.h>
 #include <format>
 #include <algorithm>
-#include <cmath>
+//#include <cmath>
 #include <string>
+
+
+namespace bst = boost::multiprecision;
 
 /*cpp_int Factorial24;
 cpp_int Factorial12;
@@ -13,8 +16,8 @@ cpp_int Fact7X3to6;*/
 //Source: https://speedcubing.org/blogs/news/number-of-combinations-calculator
 using namespace std::string_literals;
 
-static cpp_int factorial(unsigned int n) {
-    cpp_int result = 1;
+static mpz_class factorial(unsigned int n) {
+    mpz_class result = 1;
     for(unsigned int i = 2; i <= n; ++i) result *= i;
     return result;
 }
@@ -40,10 +43,41 @@ DodecagonMinx::Calculation() {
 }
 */
 mpz_class DodecagonMinx::Calculate(int i) {
-    if(i == 0) return 0_mpz;
-    if(i == 1) return 1_mpz;
+    mpz_class m = (i % 2 == 0) ? (i / 2) : ((i - 1) / 2);
 
+    mpz_class m2;
+    mpz_pow_ui(m2.get_mpz_t(), m.get_mpz_t(), 2);
 
+    mpz_class m2_1;
+    mpz_sub_ui(m2_1.get_mpz_t(), m2.get_mpz_t(), 1);
+
+    if(i % 2 == 1) {
+        mpz_class fact60;
+        mpz_fac_ui(fact60.get_mpz_t(), 60);
+        mpz_pow_ui(fact60.get_mpz_t(), fact60.get_mpz_t(), m2.get_ui() - 1);
+
+        mpz_class fact_term3, fact_product;
+        mpz_pow_ui(fact_term3.get_mpz_t(), fact60.get_mpz_t(), m2_1.get_ui());
+        fact_product = factorial(30) * factorial(20) * fact_term3; //MAIN
+
+        mpz_class exponential2;
+        mpz_ui_pow_ui(exponential2.get_mpz_t(), 2, 28 - m.get_ui()); //MAIN
+
+        mpz_class exponential3;
+        mpz_ui_pow_ui(exponential3.get_mpz_t(), 3, 19); //MAIN
+
+        mpz_class division, exp5;
+        division = factorial(5);
+        mpz_mul_ui(exp5.get_mpz_t(), m2.get_mpz_t(), 12);//12m^2 - 12m
+        mpz_submul_ui(exp5.get_mpz_t(), m.get_mpz_t(), 12);
+        mpz_pow_ui(division.get_mpz_t(), division.get_mpz_t(), exp5.get_ui()); //MAIN
+
+        mpz_class final_result;
+        final_result = fact_product * exponential2 * exponential3;
+        mpz_divexact(final_result.get_mpz_t(), final_result.get_mpz_t(), division.get_mpz_t()); //MAIN
+
+        return final_result;
+    }
 }
 /*
 cpp_int DodecagonMinx::Calculate(int i) {
