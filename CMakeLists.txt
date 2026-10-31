@@ -114,7 +114,9 @@ if(BUILD_GUI)
         imgui::imgui
     )
 endif()
-
+file(GLOB_RECURSE CUBES CMAKE_CONFIGURE_DEPENDS
+    "source/cubes/*.cpp"
+)
 add_executable(cubecounter-cli 
     "source/MainCLI.cpp"
     "include/Calculation.h"
