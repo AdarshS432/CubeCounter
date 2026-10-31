@@ -43,6 +43,9 @@ DodecagonMinx::Calculation() {
 }
 */
 mpz_class DodecagonMinx::Calculate(int i) {
+    if(i == 0) return 0_mpz;
+    if(i == 1) return 1_mpz;
+
     mpz_class m = (i % 2 == 0) ? (i / 2) : ((i - 1) / 2);
 
     mpz_class m2;
@@ -51,17 +54,18 @@ mpz_class DodecagonMinx::Calculate(int i) {
     mpz_class m2_1;
     mpz_sub_ui(m2_1.get_mpz_t(), m2.get_mpz_t(), 1);
 
-    if(i % 2 == 1) {
-        mpz_class fact60;
-        mpz_fac_ui(fact60.get_mpz_t(), 60);
-        mpz_pow_ui(fact60.get_mpz_t(), fact60.get_mpz_t(), m2.get_ui() - 1);
+    mpz_class fact60;
+    mpz_fac_ui(fact60.get_mpz_t(), 60);
 
-        mpz_class fact_term3, fact_product;
-        mpz_pow_ui(fact_term3.get_mpz_t(), fact60.get_mpz_t(), m2_1.get_ui());
-        fact_product = factorial(30) * factorial(20) * fact_term3; //MAIN
+    if(i % 2 == 1) {
+        mpz_class fact60_term;
+        mpz_pow_ui(fact60_term.get_mpz_t(), fact60.get_mpz_t(), m2.get_ui() - 1);
+
+        mpz_class fact_product;
+        fact_product = factorial(30) * factorial(20) * fact60_term; //MAIN
 
         mpz_class exponential2;
-        mpz_ui_pow_ui(exponential2.get_mpz_t(), 2, 28 - m.get_ui()); //MAIN
+        mpz_ui_pow_ui(exponential2.get_mpz_t(), 2, (m <= 28) ? (28-m.get_ui()) : (m.get_ui()-28)); //MAIN
 
         mpz_class exponential3;
         mpz_ui_pow_ui(exponential3.get_mpz_t(), 3, 19); //MAIN
@@ -73,8 +77,46 @@ mpz_class DodecagonMinx::Calculate(int i) {
         mpz_pow_ui(division.get_mpz_t(), division.get_mpz_t(), exp5.get_ui()); //MAIN
 
         mpz_class final_result;
-        final_result = fact_product * exponential2 * exponential3;
-        mpz_divexact(final_result.get_mpz_t(), final_result.get_mpz_t(), division.get_mpz_t()); //MAIN
+        if(m.get_ui() <= 28) {
+            final_result = fact_product * exponential2 * exponential3 / division; //MAIN
+        } else {
+            final_result = fact_product / exponential2 * exponential3 / division; //MAIN
+        }
+
+        return final_result;
+    } else {
+        mpz_class fact19;
+        mpz_fac_ui(fact19.get_mpz_t(), 19);
+
+        mpz_class fact19_div2;
+        mpz_divexact_ui(fact19_div2.get_mpz_t(), fact19.get_mpz_t(), 2);
+
+        mpz_class exponential3_18;
+        mpz_ui_pow_ui(exponential3_18.get_mpz_t(), 3, 18);
+
+        mpz_class term1; //MAIN
+        mpz_mul(term1.get_mpz_t(), fact19_div2.get_mpz_t(), exponential3_18.get_mpz_t());
+
+        mpz_class fact60_div2;
+        mpz_divexact_ui(fact60_div2.get_mpz_t(), fact60.get_mpz_t(), 2);
+
+        mpz_class term2; //MAIN
+        mpz_pow_ui(term2.get_mpz_t(), fact60_div2.get_mpz_t(), m.get_ui() - 1);
+
+        mpz_class fact60_div5_12;
+        mpz_class fact5_12;
+        mpz_fac_ui(fact5_12.get_mpz_t(), 5);
+        mpz_pow_ui(fact5_12.get_mpz_t(), fact5_12.get_mpz_t(), 12);
+        mpz_divexact(fact60_div5_12.get_mpz_t(), fact60.get_mpz_t(), fact5_12.get_mpz_t());
+
+        mpz_class m_1_2;
+        mpz_ui_pow_ui(m_1_2.get_mpz_t(), m.get_ui()-1, 2);
+
+        mpz_class term3; //MAIN
+        mpz_pow_ui(term3.get_mpz_t(), fact60_div5_12.get_mpz_t(), m_1_2.get_ui());
+
+        mpz_class final_result;
+        final_result = term1 * term2 * term3; //MAIN
 
         return final_result;
     }
@@ -169,14 +211,32 @@ std::string DodecagonMinx::returnScientific(const cpp_int& i, int size, int prec
 int DodecagonMinx::returnNumDigits(int i) {
     if(i == 0) return 0;
     if(i == 1) return 1;
-    double a = 6.56515806476;
-    double b = 13.0708481624;
-    double c = 23.7927056702;
-    double d = 15.5114382199;
+    if(i % 2 == 1) {
+        int m = (i-1)/2;
 
-    return floor(a + (i%2)*b + std::floor((i-2)/2)*c + std::floor(pow((i-2)/2.0,2))*d) + 1;
+        double a = 59.8750885315;
+        double b = 81.9201748494;
+        double c = 0.301029995664;
+        double d = 2.07918124605;
+
+        return floor(a + b *(m*m - 1) + c*(28-m) - d*(12*m*m - 12*m)) + 1;
+    } else {
+        int m = i/2;
+
+        double a = 25.3722472105;
+        double b = 81.6191448537;
+        double c = 56.9699998968;
+
+        return floor(a + b*(m - 1) + c*pow((m - 1), 2)) + 1;
+    }
 }
+
 int DodecagonMinx::returnTrailingZeros(int i) {
     if(i <= 1) return 0;
-    return std::pow(i-((i%2) + 1), 2) + 2*(i%2);
+    if(i % 2 == 1) {
+        return static_cast<int>(4*(i*i) - 2*i - 19);
+    } else {
+        return static_cast<int>(0.5 * (i*i) + 5*i - 9);
+    }
+
 }
